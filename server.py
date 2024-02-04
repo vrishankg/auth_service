@@ -11,7 +11,7 @@ uri = "mongodb+srv://ayushlanka106:jQ380711mrAeupZg@cluster0.sxjgrop.mongodb.net
 client = MongoClient(uri,connectTimeoutMS=30000, socketTimeoutMS=None, connect=False, maxPoolsize=1)
 Auth = client.Auth
 users = Auth.Users
-restraunts = client.Data.Restaurants
+restaurants = client.Data.Restaurants
 activities = client.Data.Activities
 
 @app.route('/')
@@ -40,6 +40,7 @@ def signup():
 
     new_user = User(
     id=user_data.get('id'),
+    password = user_data.get('password'),
     name=user_data.get('name'),
     preferred_cuisines=user_data.get('preferred_cuisines', []),
     budget=user_data.get('budget'),
@@ -48,7 +49,10 @@ def signup():
     dietary_restrictions=user_data.get('dietary_restrictions', []),
     city=user_data.get('city'),
     state=user_data.get('state'),
-    preferred_language=user_data.get('preferred_language')
+    preferred_language=user_data.get('preferred_language'),
+    current_time = user_data.get('current_time'),
+    feature_importance = user_data.get('feature_importance')
+
 )
 
   
@@ -58,24 +62,28 @@ def signup():
     print(result)
     return "200"
 
-@app.route('/add_restraunt', methods=['POST'])
+@app.route('/add_restaurant', methods=['POST'])
 def add_restaurant():
-    restraunt_data = request.json
+    restaurant_data = request.json
 
     new_restaurant = Restaurant(
-    name=restraunt_data.get('name'),
-    preferred_cuisines=restraunt_data.get('preferred_cuisines'),
-    budget=restraunt_data.get('budget'),
-    city=restraunt_data.get('city'),
-    state=restraunt_data.get('state'),
-    coordinates=restraunt_data.get('coordinates'),
-    preferred_ambiance=restraunt_data.get('preferred_ambiance'),
-    dietary_restrictions=restraunt_data.get('dietary_restrictions'),
-    menu_url=restraunt_data.get('menu_url')
+    name=restaurant_data.get('name'),
+    preferred_cuisines=restaurant_data.get('preferred_cuisines'),
+    budget=restaurant_data.get('budget'),
+    city=restaurant_data.get('city'),
+    state=restaurant_data.get('state'),
+    coordinates=restaurant_data.get('coordinates'),
+    preferred_ambiance=restaurant_data.get('preferred_ambiance'),
+    dietary_restrictions=restaurant_data.get('dietary_restrictions'),
+    menu_url=restaurant_data.get('menu_url'),
+    start_time=restaurant_data.get('start_time'),
+    end_time=restaurant_data.get('end_time')
 )
 
-    result = restraunts.insert_one(new_restaurant.to_dict())
+    result = restaurants.insert_one(new_restaurant.to_dict())
     return "200"
+
+
 
 @app.route('/add_activities', methods=['POST'])
 def add_activities():
@@ -96,7 +104,7 @@ def add_activities():
 def get_restaurants():
     try:
         # Query all data from the MongoDB collection
-        cursor = restraunts.find({})
+        cursor = restaurants.find({})
         restaurant_data = list(cursor)
 
         # Convert the data to a list of dictionaries
@@ -111,7 +119,9 @@ def get_restaurants():
                 'coordinates': restaurant.get('coordinates'),
                 'preferred_ambiance': restaurant.get('preferred_ambiance'),
                 'dietary_restrictions': restaurant.get('dietary_restrictions', []),
-                'menu_url': restaurant.get('menu_url')
+                'menu_url': restaurant.get('menu_url'),
+                'start_time': restaurant.get('start_time'),
+                'end_time': restaurant.get('end_time')
             })
 
         # Return the restaurant data as JSON
@@ -121,34 +131,6 @@ def get_restaurants():
         return jsonify({'error': str(e)}), 500
 
 
-# @app.route('/get_users', methods=['GET'])
-# def get_users():
-#     try:
-#         # Query all data from the MongoDB collection
-#         cursor = users.find({})
-#         user_data = list(cursor)
-
-#         # Convert the data to a list of dictionaries
-#         users_list = []
-#         for user in user_data:
-#             users_list.append({
-#                 'id': user.get('id'),
-#                 'name': user.get('name'),
-#                 'preferred_cuisines': user.get('preferred_cuisines', []),
-#                 'budget': user.get('budget'),
-#                 'preferred_ambiance': user.get('preferred_ambiance'),
-#                 'location_preference': user.get('location_preference', (0.0, 0.0)),
-#                 'dietary_restrictions': user.get('dietary_restrictions', []),
-#                 'city': user.get('city'),
-#                 'state': user.get('state'),
-#                 'preferred_language': user.get('preferred_language')
-#             })
-
-#         # Return the user data as JSON
-#         return jsonify({'users': users_list})
-
-#     except Exception as e:
-#         return jsonify({'error': str(e)}), 500
 
 
 @app.route('/get_users', methods=['GET'])
@@ -169,6 +151,7 @@ def get_users():
         for user in user_data:
             users_list.append({
                 'id': user.get('id'),
+                'password': user.get('password'),
                 'name': user.get('name'),
                 'preferred_cuisines': user.get('preferred_cuisines', []),
                 'budget': user.get('budget'),
@@ -177,7 +160,9 @@ def get_users():
                 'dietary_restrictions': user.get('dietary_restrictions', []),
                 'city': user.get('city'),
                 'state': user.get('state'),
-                'preferred_language': user.get('preferred_language')
+                'preferred_language': user.get('preferred_language'),
+                'current_time' : user.get('current_time'),
+                'feature_importance' : user.get('feature_importance')
             })
 
         # Return the user data as JSON
