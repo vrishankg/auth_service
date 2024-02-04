@@ -1,11 +1,31 @@
 class User:
-    def __init__(self, name, location, budget, top_cuisines, fav_activities):
+    def __init__(self, id, name, preferred_cuisines=None, budget=None, preferred_ambiance=None,
+                 location_preference=(0.0, 0.0), dietary_restrictions=None, city=None, state=None,
+                 preferred_language=None):
+        self.id = id
         self.name = name
-        self.location = location
+        self.preferred_cuisines = preferred_cuisines or []
         self.budget = budget
-        self.top_cuisines = top_cuisines
-        self.fav_activities = fav_activities
+        self.preferred_ambiance = preferred_ambiance
+        self.location_preference = location_preference
+        self.dietary_restrictions = dietary_restrictions or []
+        self.city = city
+        self.state = state
+        self.preferred_language = preferred_language
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'name': self.name,
+            'preferred_cuisines': self.preferred_cuisines,
+            'budget': self.budget,
+            'preferred_ambiance': self.preferred_ambiance,
+            'location_preference': self.location_preference,
+            'dietary_restrictions': self.dietary_restrictions,
+            'city': self.city,
+            'state': self.state,
+            'preferred_language': self.preferred_language
+        }
 
     def __str__(self):
-        return f"User(name={self.name}, location={self.location}, budget={self.budget}, top_cuisines={self.top_cuisines}, fav_activities={self.fav_activities})"
-
+        return f"User(id={self.id}, name={self.name}, preferred_cuisines={self.preferred_cuisines}, budget={self.budget}, preferred_ambiance={self.preferred_ambiance}, location_preference={self.location_preference}, dietary_restrictions={self.dietary_restrictions}, city={self.city}, state={self.state}, preferred_language={self.preferred_language})"
